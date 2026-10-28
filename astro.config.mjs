@@ -3,7 +3,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { defineConfig } from 'astro/config';
 
-const site = process.env.SITE_URL || 'https://qselery.cc.cd';
+const site = process.env.SITE_URL || 'https://blog.qselery.cc.cd';
 
 export default defineConfig({
 	site,

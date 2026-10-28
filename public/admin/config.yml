@@ -1,7 +1,7 @@
 # Sveltia CMS 配置
 # 文档：https://sveltiacms.app/en/docs
 #
-# 当前配置：仓库 spritee1/newblog，站点 https://qselery.cc.cd
+# 当前配置：仓库 spritee1/newblog，站点 https://blog.qselery.cc.cd
 # 登录方式：个人访问令牌（Fine-grained token，只给本仓库 Contents: Read and write）
 
 backend:
@@ -13,8 +13,8 @@ backend:
   # base_url: https://your-auth-worker.workers.dev
   # auth_endpoint: auth
 
-site_url: https://qselery.cc.cd
-display_url: https://qselery.cc.cd
+site_url: https://blog.qselery.cc.cd
+display_url: https://blog.qselery.cc.cd
 logo_url: ''
 locale: zh_cn
 
