@@ -26,8 +26,5 @@
 		"pagefind": "^1.5.2",
 		"typescript": "^5.9.3",
 		"wrangler": "^4.153.0"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": ["esbuild", "workerd", "sharp"]
 	}
 }
