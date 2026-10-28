@@ -1,17 +1,17 @@
 # Sveltia CMS 配置
 # 文档：https://sveltiacms.app/en/docs
 #
-# 你需要改三处：
-# 1. backend.repo  -> 你的 GitHub 仓库，例如 spritee1/my-blog
-# 2. backend.base_url -> 部署好的 sveltia-cms-auth Worker 地址（不带结尾斜杠）
-# 3. site_url / display_url -> 你的站点域名
+# 当前配置：仓库 spritee1/newblog，站点 https://qselery.cc.cd
+# 登录方式：个人访问令牌（Fine-grained token，只给本仓库 Contents: Read and write）
 
 backend:
   name: github
   repo: spritee1/newblog
   branch: main
-  base_url: https://REPLACE-WITH-YOUR-AUTH-WORKER.workers.dev
-  auth_endpoint: auth
+  # 用个人访问令牌登录（单人写作）时不需要 base_url；
+  # 如果以后要多人 OAuth 登录，再取消下面两行并填 sveltia-cms-auth Worker 地址
+  # base_url: https://your-auth-worker.workers.dev
+  # auth_endpoint: auth
 
 site_url: https://qselery.cc.cd
 display_url: https://qselery.cc.cd
