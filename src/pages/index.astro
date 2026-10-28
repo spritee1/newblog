@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const latest = posts.slice(0, 6);
+---
+
+<BaseLayout>
+	<div class="container">
+		<section class="hero">
+			<h1>{SITE_TITLE}<span class="accent">。</span></h1>
+			<p>{SITE_DESCRIPTION}</p>
+			<div class="hero-links">
+				<a class="btn btn-primary" href="/blog/">全部文章</a>
+				<a class="btn" href="/rss.xml">RSS 订阅</a>
+				<a class="btn" href="/about/">关于</a>
+			</div>
+		</section>
+
+		<div class="section-head">
+			<h2>最新文章</h2>
+			<a href="/blog/">全部 {posts.length} 篇 →</a>
+		</div>
+
+		{latest.length === 0 ? (
+			<p class="search-note">还没有文章。登录 <a href="/admin/">/admin/</a> 写第一篇。</p>
+		) : (
+			<ul class="post-list">
+				{latest.map((post) => (
+					<li>
+						<PostCard post={post} />
+					</li>
+				))}
+			</ul>
+		)}
+	</div>
+</BaseLayout>

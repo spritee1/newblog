@@ -1,0 +1,100 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TwikooComments from '../../components/TwikooComments.astro';
+import { formatDate, readingTime, tagSlug } from '../../utils/format';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog', ({ data }) => !data.draft);
+	return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const all = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const index = all.findIndex((p) => p.id === post.id);
+const newer = index > 0 ? all[index - 1] : undefined;
+const older = index >= 0 && index < all.length - 1 ? all[index + 1] : undefined;
+
+const { title, description, pubDate, updatedDate, tags } = post.data;
+const toc = headings.filter((h) => h.depth <= 3);
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	type="article"
+	publishedTime={pubDate}
+	modifiedTime={updatedDate}
+>
+	<div class="container">
+		<header class="post-header" data-pagefind-body>
+			<div class="post-meta">
+				<time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+				<span class="sep">·</span>
+				<span>{readingTime(post.body)}阅读</span>
+				{updatedDate && (
+					<>
+						<span class="sep">·</span>
+						<span>更新于 {formatDate(updatedDate)}</span>
+					</>
+				)}
+			</div>
+			<h1>{title}</h1>
+			{description && <p class="desc">{description}</p>}
+		</header>
+
+		<div class="post-layout">
+			<article class="prose" data-pagefind-body>
+				<Content />
+
+				{tags.length > 0 && (
+					<div class="tag-cloud" style="margin-top:2.5em">
+						{tags.map((tag) => (
+							<a class="tag" href={`/tags/${tagSlug(tag)}/`}>
+								#{tag}
+							</a>
+						))}
+					</div>
+				)}
+
+				<nav class="post-nav" aria-label="上下篇">
+					{older ? (
+						<a href={`/blog/${older.id}/`}>
+							<span class="label">← 上一篇</span>
+							<span class="t">{older.data.title}</span>
+						</a>
+					) : (
+						<span></span>
+					)}
+					{newer ? (
+						<a class="next" href={`/blog/${newer.id}/`}>
+							<span class="label">下一篇 →</span>
+							<span class="t">{newer.data.title}</span>
+						</a>
+					) : (
+						<span></span>
+					)}
+				</nav>
+
+				<TwikooComments />
+			</article>
+
+			{toc.length >= 2 && (
+				<aside class="toc" aria-label="目录">
+					<p class="toc-title">目录</p>
+					<ul>
+						{toc.map((h) => (
+							<li class={`depth-${h.depth}`}>
+								<a href={`#${h.slug}`}>{h.text}</a>
+							</li>
+						))}
+					</ul>
+				</aside>
+			)}
+		</div>
+	</div>
+</BaseLayout>

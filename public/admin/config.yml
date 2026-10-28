@@ -1,0 +1,81 @@
+# Sveltia CMS 配置
+# 文档：https://sveltiacms.app/en/docs
+#
+# 你需要改三处：
+# 1. backend.repo  -> 你的 GitHub 仓库，例如 spritee1/my-blog
+# 2. backend.base_url -> 部署好的 sveltia-cms-auth Worker 地址（不带结尾斜杠）
+# 3. site_url / display_url -> 你的站点域名
+
+backend:
+  name: github
+  repo: spritee1/newblog
+  branch: main
+  base_url: https://REPLACE-WITH-YOUR-AUTH-WORKER.workers.dev
+  auth_endpoint: auth
+
+site_url: https://qselery.cc.cd
+display_url: https://qselery.cc.cd
+logo_url: ''
+locale: zh_cn
+
+# 图片上传会落到 public/images，正文里用 /images/xxx 引用
+media_folder: public/images
+public_folder: /images
+
+collections:
+  - name: posts
+    label: 文章
+    label_singular: 文章
+    folder: src/content/blog
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    identifier_field: title
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    summary: '{{title}} · {{pubDate}}'
+    sortable_fields: ['pubDate', 'title']
+    fields:
+      - name: title
+        label: 标题
+        widget: string
+      - name: description
+        label: 摘要
+        widget: text
+        required: false
+        hint: 会显示在列表和 SEO description 里，一到两句话。
+      - name: pubDate
+        label: 发布日期
+        widget: datetime
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        picker_utc: false
+      - name: updatedDate
+        label: 更新日期
+        widget: datetime
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        required: false
+      - name: tags
+        label: 标签
+        widget: list
+        required: false
+        default: []
+        hint: 用逗号分隔或回车逐个添加。
+      - name: category
+        label: 分类
+        widget: string
+        required: false
+      - name: cover
+        label: 封面图
+        widget: image
+        required: false
+        choose_url: false
+      - name: draft
+        label: 草稿
+        widget: boolean
+        default: false
+        hint: 打开后不会出现在列表、RSS 和 sitemap 里。
+      - name: body
+        label: 正文
+        widget: markdown

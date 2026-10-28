@@ -1,0 +1,51 @@
+---
+import { TWIKOO_URL } from '../consts';
+
+const enabled = TWIKOO_URL.trim().length > 0;
+---
+
+{
+	enabled && (
+		<section class="comments" id="comments" aria-label="评论">
+			<h2>评论</h2>
+			<div id="twikoo"></div>
+			<script is:inline define:vars={{ TWIKOO_URL }}>
+				(() => {
+					const url = TWIKOO_URL;
+					const el = document.getElementById('twikoo');
+					if (!url || !el) return;
+
+					const load = () => {
+						const s = document.createElement('script');
+						s.src = 'https://cdn.jsdelivr.net/npm/twikoo@2/dist/twikoo.min.js';
+						s.async = true;
+						s.onload = () => {
+							window.twikoo.init({
+								envId: url,
+								el: '#twikoo',
+								lang: 'zh-CN',
+								dark: 'auto',
+							});
+						};
+						document.body.appendChild(s);
+					};
+
+					if ('IntersectionObserver' in window) {
+						const io = new IntersectionObserver(
+							(entries) => {
+								if (entries.some((e) => e.isIntersecting)) {
+									io.disconnect();
+									load();
+								}
+							},
+							{ rootMargin: '300px 0px' },
+						);
+						io.observe(el);
+					} else {
+						load();
+					}
+				})();
+			</script>
+		</section>
+	)
+}

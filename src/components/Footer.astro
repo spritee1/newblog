@@ -1,0 +1,17 @@
+---
+import { SITE_AUTHOR, SITE_TITLE } from '../consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="inner">
+		<span>© {year} {SITE_AUTHOR} · {SITE_TITLE}</span>
+		<span>
+			<a href="/rss.xml">RSS</a>
+			<span aria-hidden="true"> · </span>
+			<a href="/archive/">归档</a>
+			<span aria-hidden="true"> · </span>
+			<a href="/admin/" rel="nofollow">管理</a>
+		</span>
+	</div>
+</footer>
