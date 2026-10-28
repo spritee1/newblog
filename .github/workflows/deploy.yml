@@ -44,6 +44,17 @@ jobs:
           tail -80 build.log >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Push build log to ci-logs branch
+        if: failure()
+        run: |
+          git config user.name "ci-bot"
+          git config user.email "ci-bot@users.noreply.github.com"
+          git checkout -B ci-logs
+          cp build.log ci-build.log 2>/dev/null || true
+          git add -A ci-build.log 2>/dev/null || true
+          git commit -m "ci: build log" || true
+          git push -f origin ci-logs
+
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
