@@ -11,61 +11,9 @@
 				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei',
 					sans-serif;
 			}
-			#net-diag {
-				display: none;
-				position: fixed;
-				inset: 0 0 auto 0;
-				z-index: 999999;
-				background: #b3261e;
-				color: #fff;
-				font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
-				padding: 12px 44px 12px 16px;
-				white-space: pre-wrap;
-				word-break: break-all;
-			}
-			#net-diag button {
-				position: absolute;
-				top: 8px;
-				right: 8px;
-				border: 0;
-				background: #fff;
-				color: #b3261e;
-				border-radius: 6px;
-				padding: 4px 10px;
-				cursor: pointer;
-				font: inherit;
-			}
 		</style>
 	</head>
 	<body>
-		<div id="net-diag" role="alert">
-			<button type="button" onclick="this.parentNode.style.display='none'">关闭</button>
-			<span id="net-diag-text"></span>
-		</div>
-		<script>
-			// 临时诊断：把失败的请求地址和原因直接显示在页面上
-			(() => {
-				const box = document.getElementById('net-diag');
-				const text = document.getElementById('net-diag-text');
-				const show = (msg) => {
-					text.textContent += (text.textContent ? '\n' : '') + msg;
-					box.style.display = 'block';
-				};
-				const origFetch = window.fetch;
-				window.fetch = async (...args) => {
-					const url = typeof args[0] === 'string' ? args[0] : args[0]?.url;
-					try {
-						return await origFetch(...args);
-					} catch (err) {
-						show(`[fetch 失败] ${url}\n原因: ${err && err.message}`);
-						throw err;
-					}
-				};
-				window.addEventListener('unhandledrejection', (e) => {
-					show(`[未处理的 Promise 错误] ${(e.reason && (e.reason.message || e.reason)) || '未知'}`);
-				});
-			})();
-		</script>
 		<script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
 	</body>
 </html>

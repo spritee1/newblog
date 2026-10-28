@@ -22,6 +22,20 @@ locale: zh_cn
 media_folder: public/images
 public_folder: /images
 
+# 上传的图片先转成 webp 并限制长边 2048px，避免手机原图把保存请求撑爆
+# （GitHub GraphQL 保存是一次提交，单次几 MB 以上容易被代理或接口截断）
+media_libraries:
+  default:
+    config:
+      max_file_size: 5242880 # 5MB，超过直接提示，不上传
+      slugify_filename: true
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 2048
+          height: 2048
+
 collections:
   - name: posts
     label: 文章
