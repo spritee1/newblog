@@ -2,7 +2,7 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "qselery-blog",
 	"compatibility_date": "2026-10-01",
-	// 自定义域名：需要 qselery.cc.cd 这个 zone 在同一个 Cloudflare 账号里
+	// 自定义域名：qselery.cc.cd 这个 zone 在同一个 Cloudflare 账号里
 	"routes": [{ "pattern": "blog.qselery.cc.cd", "custom_domain": true }],
 	"assets": {
 		"directory": "./dist",

@@ -19,7 +19,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 12
+          version: 11.22.0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -34,8 +34,6 @@ jobs:
         run: |
           set -o pipefail
           pnpm build 2>&1 | tee build.log
-        env:
-          SITE_URL: https://blog.qselery.cc.cd
 
       - name: Publish build log to summary
         if: failure()

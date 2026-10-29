@@ -1,38 +1,42 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import AdvancedSearch from "@components/pages/AdvancedSearch.svelte";
+import I18nKey from "@i18n/i18nKey";
+import { i18n } from "@i18n/translation";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+import { url } from "@/utils/url-utils";
+
+const title = i18n(I18nKey.search);
+const description = "";
 ---
 
-<BaseLayout title="搜索" description="站内搜索" noindex>
-	<div class="container">
-		<div class="page-head">
-			<h1>搜索</h1>
-			<p>全文搜索，索引在构建时生成，不依赖任何后端服务。</p>
-		</div>
+<MainGridLayout title={title} description={description}>
+    <div class="min-h-[80vh]">
+        <AdvancedSearch client:load title={title} description={description} />
+    </div>
+</MainGridLayout>
 
-		<div class="search-wrap">
-			<div id="search"></div>
-			<p class="search-note">
-				没搜到？可以翻 <a href="/archive/">归档</a>，或者用浏览器的 Ctrl/⌘ + F。
-			</p>
-		</div>
-	</div>
-
-	<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-	<script src="/pagefind/pagefind-ui.js" is:inline></script>
-	<script is:inline>
-		window.addEventListener('DOMContentLoaded', () => {
-			if (typeof PagefindUI === 'undefined') {
-				document.getElementById('search').innerHTML =
-					'<p class="search-note">搜索索引只在构建产物中存在，请先在本地执行 <code>pnpm build</code> 并通过 <code>pnpm preview</code> 预览。</p>';
-				return;
-			}
-			const ui = new PagefindUI({
-				element: '#search',
-				showSubResults: true,
-				showImages: false,
-			});
-			const q = new URLSearchParams(location.search).get('q');
-			if (q) ui.triggerSearch(q);
-		});
-	</script>
-</BaseLayout>
+{import.meta.env.PROD && (
+<script is:inline define:vars={{ scriptUrl: url('/pagefind/pagefind.js') }}>
+    if (!window.pagefind) {
+        async function loadPagefind() {
+            const url = scriptUrl.replace(/\/$/, "")
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                if (response.status !== 200) {
+                    return;
+                }
+                const pagefind = await import(scriptUrl);
+                await pagefind.options({
+                    "excerptLength": 20
+                });
+                window.pagefind = pagefind;
+                window.dispatchEvent(new Event('pagefindready'));
+            } catch (error) {
+                console.warn("Pagefind script not found or failed to load.");
+                window.dispatchEvent(new Event('pagefindloaderror'));
+            }
+        }
+        loadPagefind();
+    }
+</script>
+)}

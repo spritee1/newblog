@@ -1,15 +1,12 @@
-# Sveltia CMS 配置
-# 文档：https://sveltiacms.app/en/docs
-#
-# 当前配置：仓库 spritee1/newblog，站点 https://blog.qselery.cc.cd
-# 登录方式：个人访问令牌（Fine-grained token，只给本仓库 Contents: Read and write）
+# Sveltia CMS 配置（Firefly 主题）
+# 仓库 spritee1/newblog，站点 https://blog.qselery.cc.cd
+# 登录：个人访问令牌（Fine-grained token，只给本仓库 Contents: Read and write）
 
 backend:
   name: github
   repo: spritee1/newblog
   branch: main
-  # 用个人访问令牌登录（单人写作）时不需要 base_url；
-  # 如果以后要多人 OAuth 登录，再取消下面两行并填 sveltia-cms-auth Worker 地址
+  # 单人写作不需要 base_url；要多人 OAuth 登录时再部署 sveltia-cms-auth 并取消注释
   # base_url: https://your-auth-worker.workers.dev
   # auth_endpoint: auth
 
@@ -18,16 +15,14 @@ display_url: https://blog.qselery.cc.cd
 logo_url: ''
 locale: zh_cn
 
-# 图片上传会落到 public/images，正文里用 /images/xxx 引用
 media_folder: public/images
 public_folder: /images
 
-# 上传的图片先转成 webp 并限制长边 2048px，避免手机原图把保存请求撑爆
-# （GitHub GraphQL 保存是一次提交，单次几 MB 以上容易被代理或接口截断）
+# 上传图片自动转 webp、限制长边 2048，避免手机原图把保存请求撑爆
 media_libraries:
   default:
     config:
-      max_file_size: 5242880 # 5MB，超过直接提示，不上传
+      max_file_size: 5242880
       slugify_filename: true
       transformations:
         raster_image:
@@ -40,47 +35,46 @@ collections:
   - name: posts
     label: 文章
     label_singular: 文章
-    folder: src/content/blog
+    folder: src/content/posts
     create: true
     delete: true
     extension: md
     format: frontmatter
     identifier_field: title
     slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
-    summary: '{{title}} · {{pubDate}}'
-    sortable_fields: ['pubDate', 'title']
+    summary: '{{title}} · {{published}}'
+    sortable_fields: ['published', 'title']
     fields:
       - name: title
         label: 标题
         widget: string
-      - name: description
-        label: 摘要
-        widget: text
-        required: false
-        hint: 会显示在列表和 SEO description 里，一到两句话。
-      - name: pubDate
+      - name: published
         label: 发布日期
         widget: datetime
         date_format: 'YYYY-MM-DD'
         time_format: false
         picker_utc: false
-      - name: updatedDate
+      - name: updated
         label: 更新日期
         widget: datetime
         date_format: 'YYYY-MM-DD'
         time_format: false
         required: false
+      - name: description
+        label: 摘要
+        widget: text
+        required: false
+        hint: 列表和 SEO 里显示的简介，一两句话。
       - name: tags
         label: 标签
         widget: list
         required: false
         default: []
-        hint: 用逗号分隔或回车逐个添加。
       - name: category
         label: 分类
         widget: string
         required: false
-      - name: cover
+      - name: image
         label: 封面图
         widget: image
         required: false
@@ -89,7 +83,25 @@ collections:
         label: 草稿
         widget: boolean
         default: false
-        hint: 打开后不会出现在列表、RSS 和 sitemap 里。
+        required: false
+      - name: pinned
+        label: 置顶
+        widget: boolean
+        default: false
+        required: false
+      - name: comment
+        label: 允许评论
+        widget: boolean
+        default: true
+        required: false
+      - name: series
+        label: 系列
+        widget: string
+        required: false
+      - name: seriesOrder
+        label: 系列序号
+        widget: number
+        required: false
       - name: body
         label: 正文
         widget: markdown

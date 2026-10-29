@@ -1,33 +1,39 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE_AUTHOR } from '../consts';
+
+import { getEntry, render } from "astro:content";
+import Markdown from "@components/common/Markdown.astro";
+import { profileConfig } from "@/config/profileConfig";
+import { siteConfig } from "@/config/siteConfig";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getAuthorAvatarUrl } from "@/utils/schema-image";
+import { buildProfilePage } from "@/utils/schema-utils";
+
+const aboutPost = await getEntry("spec", "about");
+
+if (!aboutPost) {
+	throw new Error("About page content not found");
+}
+
+const { Content } = await render(aboutPost);
+
+const avatarUrl = await getAuthorAvatarUrl();
+const jsonLd = buildProfilePage({
+	site: siteConfig.site_url,
+	profileConfig,
+	authorUrl: Astro.url.toString(),
+	avatarUrl,
+	description: profileConfig.bio,
+});
 ---
-
-<BaseLayout title="关于" description={`关于 ${SITE_AUTHOR}`}>
-	<div class="container">
-		<div class="page-head">
-			<h1>关于</h1>
-		</div>
-
-		<div class="prose" style="padding-bottom:2em">
-			<p>你好，我是{SITE_AUTHOR}。这里放一些折腾记录、小作品，以及偶尔想清楚的事。</p>
-
-			<h2>这个站是怎么来的</h2>
-			<p>
-				2020 年我在 Cloudflare Workers + KV 上搭过一个不用服务器的博客（CF-Blog），那套东西当时挺先进：页面全量边缘缓存，速度接近静态站，内容又能像 WordPress 一样在线写。
-			</p>
-			<p>
-				但它毕竟是五年前的架构：软 404、没有 RSS、模板每次请求都去 GitHub 拉取、后台只有一个明文密码。所以 2026 年重写了一遍，换成：
-			</p>
-			<ul>
-				<li><strong>Astro</strong> 生成静态页面，部署在 Cloudflare Workers 上，全球边缘分发</li>
-				<li><strong>Markdown</strong> 写内容，进 Git，可回滚、可本地预览</li>
-				<li><strong>Twikoo</strong> 做评论，跑在 Workers + D1 上，不用另买服务器</li>
-				<li><strong>Sveltia CMS</strong> 提供浏览器写作后台，改完直接 commit 回仓库</li>
-			</ul>
-
-			<h2>联系</h2>
-			<p>想聊什么，直接在文章下面留言，或者开个 <a href="https://github.com" rel="nofollow">GitHub issue</a>。</p>
-		</div>
-	</div>
-</BaseLayout>
+<MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
+    <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
+        <div class="card-base z-10 px-9 py-6 relative w-full ">
+            <Markdown class="mt-2">
+                <Content />
+            </Markdown>
+        </div>
+    </div>
+</MainGridLayout>
